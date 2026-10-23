@@ -1,6 +1,6 @@
 --- a/app.py
 +++ b/app.py
-@@ -344,6 +344,14 @@
+@@ -344,7 +344,23 @@
              elif event.type == sdl2.SDL_KEYDOWN:
                  if not self._handle_input_event(event.key.keysym.sym):
                      return False
