@@ -1,0 +1,26 @@
+--- a/app.py
++++ b/app.py
+@@ -344,6 +344,14 @@
+             elif event.type == sdl2.SDL_KEYDOWN:
+                 if not self._handle_input_event(event.key.keysym.sym):
+                     return False
++            elif event.type == sdl2.SDL_JOYAXISMOTION:
++                # RG DS Plus left stick: axes 0 (horizontal), 1 (vertical).
++                axis = event.jaxis.axis
++                value = event.jaxis.value
++                if axis in (0, 1) and abs(value) > 18000:
++                    key = (sdl2.SDLK_LEFT if value < 0 else sdl2.SDLK_RIGHT) if axis == 0 else (sdl2.SDLK_UP if value < 0 else sdl2.SDLK_DOWN)
++                    if not self._handle_input_event(key):
++                        return False
+             elif event.type == sdl2.SDL_JOYBUTTONDOWN:
+                 button = event.jbutton.button
++                # RK3566 / ROCKNIX D-pad appears as joystick buttons, not hats.
++                direction_keys = {13: sdl2.SDLK_UP, 14: sdl2.SDLK_DOWN,
++                                  15: sdl2.SDLK_LEFT, 16: sdl2.SDLK_RIGHT}
++                if button in direction_keys:
++                    if not self._handle_input_event(direction_keys[button]):
++                        return False
++                    self.needs_redraw = True
++                    continue
+                 if not self._handle_controller_button(button):
+                     return False
